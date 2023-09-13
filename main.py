@@ -1,3 +1,5 @@
+import queue
+
 import pygame, os, re, sys, threading
 from random import randint
 import store
@@ -9,6 +11,8 @@ pygame.init()
 w = 1400
 h = 800
 win = pygame.display.set_mode((w,h))
+
+
 
 #Sprites
 
@@ -201,8 +205,10 @@ class enemy(character):
 
 #Draw function for game
 def draw():
-    screen_pos=0
+    global screen_pos
+    spawned = False
     while True:
+        #print(screen_pos)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -212,21 +218,20 @@ def draw():
             screen_pos += (25 / 1000) * w
         elif mouse[0] <= .1 * w and screen_pos >= -w + (25 / 1000) * w and mouse[1] >= 50:
             screen_pos -= (25 / 1000) * w
-        """try:
-            draw(mouse)
+        try:
             if spawned == False:
                 t1 = threading.Thread(target=drawChar, args=())
                 t1.start()
                 spawned = True
         except:
-            pass"""
+            pass
         pygame.display.update()
         framerate.tick(13)
         clock = (pygame.time.get_ticks() / 1000) - startTime
         win.blit(backgrounds["castle_pale"],(-screen_pos,0))
         win.blit(backgrounds["castle_pale"], (-screen_pos-w, 0))
         win.blit(backgrounds["castle_pale"], (-screen_pos+w, 0))
-        for h in heroes:
+        """for h in heroes:
             h.draw()
             if h.hp <= 0 and h.animation_complete is True:
                 heroes.remove(h)
@@ -234,7 +239,7 @@ def draw():
             e.draw()
             #print(e.index)
             if e.hp <= 0 and e.animation_complete is True:
-                enemies.remove(e)
+                enemies.remove(e)"""
         shop.draw()
 
 
@@ -249,13 +254,14 @@ def drawChar():
 framerate = pygame.time.Clock()
 startTime = pygame.time.get_ticks()/1000
 loadGame()
-screen_pos = 0
 shop = store.Store()
 enemies = []
 enemies.append(enemy())
 heroes = []
 heroes.append(character())
-spawned = False
+screen_pos = 0
+
+
 def main():
     t0 = threading.Thread(target=(draw()),args=())
     t0.start()
